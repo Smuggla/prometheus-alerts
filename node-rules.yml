@@ -1,0 +1,17 @@
+groups:
+- name: /etc/prometheus/node-rules.yml
+  rules:
+  - alert: Linux Node Down 24/7
+    expr: up{job=~".*node-exporter.*",environment=~".*[pP].*"} == 0
+    for: 10m
+    annotations:
+      description: '{{ $labels.instance }} of job {{ $labels.job }} has been down
+        for more than 10 minutes.'
+      summary: 'Instance {{ $labels.instance }} down'
+  - alert: Windows Node Down 24/7
+    expr: up{job=~".*wmi-exporter.*",environment=~".*[pP].*"} == 0
+    for: 10m
+    annotations:
+      description: '{{ $labels.instance }} of job {{ $labels.job }} has been down
+        for more than 10 minutes.'
+      summary: 'Instance {{ $labels.instance }} down'

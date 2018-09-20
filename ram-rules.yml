@@ -1,0 +1,15 @@
+groups:
+- name: /etc/prometheus/cpu-rules.yml
+  rules:
+  - alert: Linux MEM Utilization
+    expr: (((node_memory_MemTotal-node_memory_MemFree-node_memory_Cached)/(node_memory_MemTotal)*100)) > 90
+    for: 10m
+    annotations:
+      description: '{{ $labels.instance }} MEM has been above 75 percent for more than 10 minutes.'
+      summary: '{{ $labels.instance }} MEM Utilization'
+  - alert: Windows MEM Utilization
+    expr:  wmi_os_physical_memory_free_bytes / wmi_os_virtual_memory_bytes > .90
+    for: 10m
+    annotations:
+      description: '{{ $labels.instance }} MEM has been above 75 percent for more than 10 minutes.'
+      summary: '{{ $labels.instance }} MEM Utilization'

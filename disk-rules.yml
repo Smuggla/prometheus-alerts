@@ -1,0 +1,54 @@
+groups:
+- name: /etc/prometheus/node-rules.yml
+  rules:
+  - alert: Linux Disk Space 24/7
+    expr: node_filesystem_avail{job=~".*node-exporter.*",environment=~".*[pP].*",mountpoint!~"/mnt/.*"} / node_filesystem_size{job=~".*node-exporter.*",environment=~".*[pP].*",mountpoint!~"/mnt/.*"}
+      < 0.1
+    for: 5m
+    annotations:
+      description: '{{ $labels.instance }} disk is almost full!'
+      summary: 'Node {{ $labels.instance }} disk low, free space < 10%'
+  - alert: Windows Disk Space 24/7
+    expr: wmi_logical_disk_free_bytes{job=~".*wmi-exporter.*",environment=~".*[pP].*",volume!="P:"} / wmi_logical_disk_size_bytes{job=~".*wmi-exporter.*",environment=~".*[pP].*",volume!="P:"}
+      < 0.1
+    for: 5m
+    annotations:
+      description: '{{ $labels.instance }} disk is almost full!'
+      summary: 'Node {{ $labels.instance }} disk low, free space < 10%'
+  - alert: Linux Node Down 8/5
+    expr: up{job=~".*node-exporter.*",environment!~".*[pP].*"} == 0 and on () day_of_week() != 0 and on () day_of_week() < 6 and on () hour() >= 12 and on () hour() <= 21
+    for: 10m
+    annotations:
+      description: '{{ $labels.instance }} of job {{ $labels.job }} has been down
+        for more than 10 minutes.'
+      summary: 'Instance {{ $labels.instance }} down'
+  - alert: Windows Node Down 8/5
+    expr: up{job=~".*wmi-exporter.*",environment!~".*[pP].*"} == 0 and on () day_of_week() != 0 and on () day_of_week() < 6 and on () hour() >= 12 and on () hour() <= 21
+    for: 10m
+    annotations:
+      description: '{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 10 minutes.'
+      summary: 'Instance {{ $labels.instance }} down'
+  - alert: Linux Disk Space 8/5
+    expr: node_filesystem_avail{job=~".*node-exporter.*",environment!~".*[pP].*",mountpoint!~"/mnt/.*"} / node_filesystem_size{job=~".*node-exporter.*",environment!~".*[pP].*",mountpoint!~"/mnt/.*"} < 0.1 and on () day_of_week() != 0 and on () day_of_week() < 6 and on () hour() >= 12 and on () hour() <= 21
+    for: 5m
+    annotations:
+      description: '{{ $labels.instance }} disk is almost full!'
+      summary: 'Node {{ $labels.instance }} disk low, free space < 10%'
+  - alert: Windows Disk Space 8/5
+    expr: wmi_logical_disk_free_bytes{job=~".*wmi-exporter.*",environment!~".*[pP].*",volume!="P:"} / wmi_logical_disk_size_bytes{job=~".*wmi-exporter.*",environment!~".*[pP].*",volume!="P:"} < 0.1 and on () day_of_week() != 0 and on () day_of_week() < 6 and on () hour() >= 12 and on () hour() <= 21
+    for: 5m
+    annotations:
+      description: '{{ $labels.instance }} disk is almost full!'
+      summary: 'Node {{ $labels.instance }} disk low, free space < 10%'
+  - alert: Linux Disk Fill in 4h
+    expr: predict_linear(node_filesystem_free{mountpoint!~".*(mnt|user).*", fstype!="tmpfs"}[4h], 4*3600) < 0
+    for: 30m
+    annotations:
+      description: '{{ $labels.mountpoint }} on {{ $labels.instance }} is going to fill in 4 hours!'
+      summary: 'Instance {{ $labels.instance }} disk fill 4 hrs'
+  - alert: Windows Disk Fill in 4h
+    expr: predict_linear(wmi_logical_disk_free_bytes{volume!="P:"}[4h], 4*3600) < 0
+    for: 30m
+    annotations:
+      description: '{{ $labels.mountpoint }} on {{ $labels.instance }} is going to fill in 4 hours!'
+      summary: 'Instance {{ $labels.instance }} disk fill 4 hrs'

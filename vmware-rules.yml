@@ -1,0 +1,15 @@
+groups:
+- name: /etc/prometheus/vmware-rules.yml
+  rules:
+  - alert: vmware datastore Disk Space 24/7
+    expr: vmware_datastore_freespace_size / vmware_datastore_capacity_size < .1
+    for: 5m
+    annotations:
+      description: '{{ $labels.instance }} disk is almost full!'
+      summary: 'Host {{ $labels.instance }} disk low, free space < 10%'
+  - alert: vmware host 24/7
+    expr: vmware_host_power_state == 0
+    for: 5m
+    annotations:
+      description: '{{ $labels.instance }} is down!'
+      summary: 'Host {{ $labels.instance }} is down!'

@@ -1,0 +1,15 @@
+groups:
+- name: /etc/prometheus/cpu-rules.yml
+  rules:
+  - alert: Linux CPU Utilization
+    expr: 100 - (avg by (instance) (irate(node_cpu{mode="idle"}[5m])) * 100) > 70
+    for: 20m
+    annotations:
+      description: '{{ $labels.instance }} CPU has been above 70 percent for more than 20 minutes.'
+      summary: '{{ $labels.instance }} CPU Utilization'
+  - alert: Windows CPU Utilization
+    expr: 100 - (avg by (instance) (irate(wmi_cpu_time_total{mode="idle"}[5m])) * 100) > 70
+    for: 20m
+    annotations:
+      description: '{{ $labels.instance }} CPU has been above 70 percent for more than 20 minutes.'
+      summary: '{{ $labels.instance }} CPU Utilization'

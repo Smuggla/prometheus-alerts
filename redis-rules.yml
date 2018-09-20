@@ -1,0 +1,27 @@
+groups:
+- name: /etc/prometheus/redis-rules.yml
+  rules:
+  - alert: redis Down Prd
+    expr: redis_up{environment=~".*[pP].*", job=~".*redis.*"} == 0
+    for: 10m
+    annotations:
+      description: 'redis on {{ $labels.instance }} has been down for more than 5 minutes.'
+      summary: 'redis on {{ $labels.instance }} down'
+  - alert: redis Down Dev
+    expr: redis_up{environment!~".*[pP].*", job=~".*redis.*"} == 0 and on () day_of_week() != 0 and on () day_of_week() < 6 and on () hour() >= 12 and on () hour() <= 21
+    for: 10m
+    annotations:
+      description: 'redis on {{ $labels.instance }} has been down for more than 5 minutes.'
+      summary: 'redis on {{ $labels.instance }} down'
+  - alert: redis Exporter Down Prd
+    expr: up{environment=~".*[pP].*", job=~".*redis.*"} == 0
+    for: 10m
+    annotations:
+      description: 'redis exporter on {{ $labels.instance }} has been down for more than 10 minutes.'
+      summary: 'redis exporter on {{ $labels.instance }} down'
+  - alert: redis Exporter Down Dev
+    expr: up{environment!~".*[pP].*", job=~".*redis.*"} == 0 and on () day_of_week() != 0 and on () day_of_week() < 6 and on () hour() >= 12 and on () hour() <= 21
+    for: 10m
+    annotations:
+      description: 'redis exporter on {{ $labels.instance }} has been down for more than 10 minutes.'
+      summary: 'redis exporter on {{ $labels.instance }} down'

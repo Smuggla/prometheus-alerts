@@ -1,0 +1,28 @@
+groups:
+- name: /etc/prometheus/solr-rules.yml
+  rules:
+  - alert: solr Down Prd
+    expr: solr_up{environment=~".*[pP].*", job=~".*solr.*"} == 0
+    for: 10m
+    annotations:
+      description: 'solr on {{ $labels.instance }} has been down for more than 5 minutes.'
+      summary: 'solr on {{ $labels.instance }} down'
+  - alert: solr Down Dev
+    expr: solr_up{environment!~".*[pP].*", job=~".*solr.*"} == 0 and on () day_of_week() != 0 and on () day_of_week() < 6 and on () hour() >= 12 and on () hour() <= 21
+    for: 10m
+    annotations:
+      description: 'solr on {{ $labels.instance }} has been down for more than 5 minutes.'
+      summary: 'solr on {{ $labels.instance }} down'
+  - alert: solr Exporter Down Prd
+    expr: up{environment=~".*[pP].*", job=~".*solr.*"} == 0
+    for: 10m
+    annotations:
+      description: 'solr exporter on {{ $labels.instance }} has been down for more than 10 minutes.'
+      summary: 'solr exporter on {{ $labels.instance }} down'
+  - alert: solr Exporter Down Dev
+    expr: up{environment!~".*[pP].*", job=~".*solr.*"} == 0 and on () day_of_week() != 0 and on () day_of_week() < 6 and on () hour() >= 12 and on () hour() <= 21
+    for: 10m
+    annotations:
+      description: 'solr exporter on {{ $labels.instance }} has been down for more than 10 minutes.'
+      summary: 'solr exporter on {{ $labels.instance }} down'
+

@@ -1,0 +1,9 @@
+groups:
+- name: http-rules.yml
+  rules:
+  - alert: SSLCertExpiringSoon
+    expr: probe_ssl_earliest_cert_expiry{job="blackbox-exporter"} - time() < 86400 * 30
+    for: 10m
+    annotations:
+      description: '{{ $labels.instance }} MEM has been above 75 percent for more than 10 minutes.'
+      summary: '{{ $labels.instance }} MEM Utilization'

@@ -1,0 +1,63 @@
+groups:
+- name: /etc/prometheus/rabbitmq-rules.yml
+  rules:
+  - alert: Rabbitmq Down Prd
+    expr: rabbitmq_up{environment=~".*[pP].*", job=~".*rabbitmq.*"} == 0
+    for: 5m
+    annotations:
+      description: '{{ $labels.instance }} rabbitmq service has been down for more than 5 minutes.'
+      summary: 'Rabbitmq on {{ $labels.instance }} down'
+  - alert: Rabbitmq Down Dev
+    expr: rabbitmq_up{environment!~".*[pP].*", job=~".*rabbitmq.*"} == 0 and on () day_of_week() != 0 and on () day_of_week() < 6 and on () hour() >= 12 and on () hour() <= 21
+    for: 5m
+    annotations:
+      description: '{{ $labels.instance }} rabbitmq service has been down for more than 5 minutes.'
+      summary: 'Rabbitmq on {{ $labels.instance }} down'
+  - alert: Rabbitmq Partitioned Prd
+    expr: rabbitmq_partitions{environment=~".*[pP].*", job=~".*rabbitmq.*"} != 0
+    for: 5m
+    annotations:
+      description: '{{ $labels.instance }} has been partiioned for more than 5 minutes.'
+      summary: 'Instance {{ $labels.instance }} rabbitmq partiioned'
+  - alert: Rabbitmq Partitioned Dev
+    expr: rabbitmq_partitions{environment!~".*[pP].*", job=~".*rabbitmq.*"} != 0 and on () day_of_week() != 0 and on () day_of_week() < 6 and on () hour() >= 12 and on () hour() <= 21
+    for: 5m
+    annotations:
+      description: '{{ $labels.instance }} has been partiioned for more than 5 minutes.'
+      summary: 'Instance {{ $labels.instance }} down'
+  - alert: Rabbitmq Exporter Down Prd
+    expr: up{environment=~".*[pP].*", job=~".*rabbitmq.*"} == 0
+    for: 10m
+    annotations:
+      description: '{{ $labels.instance }} has been down for more than 10 minutes.'
+      summary: 'Instance {{ $labels.instance }} down'
+  - alert: Rabbitmq Exporter Down Dev
+    expr: up{environment!~".*[pP].*", job=~".*rabbitmq.*"} == 0 and on () day_of_week() != 0 and on () day_of_week() < 6 and on () hour() >= 12 and on () hour() <= 21
+    for: 10m
+    annotations:
+      description: '{{ $labels.instance }} has been down for more than 10 minutes.'
+      summary: 'Instance {{ $labels.instance }} down'
+  - alert: Rabbitmq Node Connections Prd
+    expr: rabbitmq_connectionsTotal{environment=~".*[pP].*", job=~".*rabbitmq.*"} == 0
+    for: 5m
+    annotations:
+      description: 'rabbitmq on {{ $labels.instance }} has had no connections for more than 5 minutes.'
+      summary: 'Instance {{ $labels.instance }} rabbitmq Connection count'
+  - alert: Rabbitmq Node Connections Dev
+    expr: rabbitmq_connectionsTotal{environment!~".*[pP].*", job=~".*rabbitmq.*"} == 0 and on () day_of_week() != 0 and on () day_of_week() < 6 and on () hour() >= 12 and on () hour() <= 21
+    for: 5m
+    annotations:
+      description: '{{ $labels.instance }} has had no rabbitmq connections for more than 5 minutes.'
+      summary: ' {{ $labels.instance }} rabbitmq Connection count'
+  - alert: Rabbitmq Node Consumers Prd
+    expr: rabbitmq_consumersTotal{environment=~".*[pP].*", job=~".*rabbitmq.*"} == 0
+    for: 10m
+    annotations:
+      description: '{{ $labels.instance }} of job {{ $labels.job }} has no rabbitmq consumers for more than 10 minutes.'
+      summary: '{{ $labels.instance }} rabbitmq Consumer count'
+  - alert: Rabbitmq Node Consumers Dev
+    expr: rabbitmq_consumersTotal{environment!~".*[pP].*", job=~".*rabbitmq.*"} == 0 and on () day_of_week() != 0 and on () day_of_week() < 6 and on () hour() >= 12 and on () hour() <= 21
+    for: 10m
+    annotations:
+      description: '{{ $labels.instance }} has no rabbitmq consumers for more than 10 minutes.'
+      summary: '{{ $labels.instance }} rabbitmq Consumer count'

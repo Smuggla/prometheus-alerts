@@ -1,0 +1,15 @@
+groups:
+- name: /etc/prometheus/mssql-rules.yml
+  rules:
+  - alert: mssql Exporter Down Prd
+    expr: up{environment=~".*[pP].*", job=~".*mssql.*"} == 0
+    for: 10m
+    annotations:
+      description: '{{ $labels.instance }} mssql exporter has been down for more than 10 minutes.'
+      summary: '{{ $labels.instance }} mssql exporter down'
+  - alert: mssql Exporter Down Dev
+    expr: up{environment!~".*[pP].*", job=~".*mssql.*"} == 0 and on () day_of_week() != 0 and on () day_of_week() < 6 and on () hour() >= 12 and on () hour() <= 21
+    for: 10m
+    annotations:
+      description: '{{ $labels.instance }} mssql exporter has been down for more than 10 minutes.'
+      summary: '{{ $labels.instance }} mssql exporter down'
